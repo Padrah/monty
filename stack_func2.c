@@ -1,103 +1,88 @@
 #include "monty.h"
+
 /**
- * _swap - swap top of stack y second top stack
+ * nop - Does nothing.
+
  */
-
-void _swap(stack_t **stack, unsigned int line_number)
+void nop(stack_t **stack, unsigned int line_number)
 {
-	stack_t *runner;
-	int tmp;
+	(void)stack;
+	(void)line_number;
+}
 
-	runner = *stack;
-	if (runner == NULL || runner->next == NULL)
-	{
-		fprintf(stderr, "L%d: can't swap, stack too short\n", line_number);
-		exit(EXIT_FAILURE);
-	}
-	tmp = runner->n;
-	runner->n = runner->next->n;
-	runner->next->n = tmp;
+
+/**
+ * swap_nodes - Swaps the top two elements of the stack.
+ */
+void swap_nodes(stack_t **stack, unsigned int line_number)
+{
+	stack_t *tmp;
+
+	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
+		more_err(8, line_number, "swap");
+	tmp = (*stack)->next;
+	(*stack)->next = tmp->next;
+	if (tmp->next != NULL)
+		tmp->next->prev = *stack;
+	tmp->next = *stack;
+	(*stack)->prev = tmp;
+	tmp->prev = NULL;
+	*stack = tmp;
 }
 
 /**
- * _add - add top of stack y second top stack
+ * add_nodes - Adds the top two elements of the stack.
  */
-
-void _add(stack_t **stack, unsigned int line_number)
+void add_nodes(stack_t **stack, unsigned int line_number)
 {
-	stack_t *tmp = *stack;
-	int sum = 0, i = 0;
+	int sum;
 
-	if (tmp == NULL)
-	{
-		fprintf(stderr, "L%d: can't add, stack too short\n", line_number);
-		exit(EXIT_FAILURE);
-	}
+	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
+		more_err(8, line_number, "add");
 
-	while (tmp)
-	{
-		tmp = tmp->next;
-		i++;
-	}
-
-	if (stack == NULL || (*stack)->next == NULL || i <= 1)
-	{
-		fprintf(stderr, "L%d: can't add, stack too short\n", line_number);
-		exit(EXIT_FAILURE);
-	}
-	sum = (*stack)->next->n + (*stack)->n;
-	_pop(stack, line_number);
-
+	(*stack) = (*stack)->next;
+	sum = (*stack)->n + (*stack)->prev->n;
 	(*stack)->n = sum;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
 }
 
-/**
- * _nop - nop top of stack y second top stack
- */
 
-void _nop(__attribute__ ((unused))stack_t **stack,
-		__attribute__ ((unused)) unsigned int line_number)
+/**
+ * sub_nodes - Adds the top two elements of the stack.
+ */
+void sub_nodes(stack_t **stack, unsigned int line_number)
 {
-	;
+	int sum;
+
+	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
+
+		more_err(8, line_number, "sub");
+
+
+	(*stack) = (*stack)->next;
+	sum = (*stack)->n - (*stack)->prev->n;
+	(*stack)->n = sum;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
 }
 
-/**
- * _pchar - prints the ASCII value of a number
- */
-void _pchar(stack_t **stack, unsigned int line_number)
-{
-	int val;
-
-	if (stack == NULL || *stack == NULL)
-	{
-		fprintf(stderr, "L%d: can't pchar, stack empty\n", line_number);
-		free(var_global.buffer);
-		fclose(var_global.file);
-		free_dlistint(*stack);
-		exit(EXIT_FAILURE);
-	}
-
-	val = (*stack)->n;
-	if (val > 127 || val < 0)
-	{
-		fprintf(stderr, "L%d: can't pchar, value out of range\n", line_number);
-		free(var_global.buffer);
-		fclose(var_global.file);
-		free_dlistint(*stack);
-		exit(EXIT_FAILURE);
-	}
-
-	putchar(val);
-	putchar('\n');
-}
 
 /**
- * _isalpha - checks if int is in alphabet
+ * div_nodes - Adds the top two elements of the stack.
  */
-int _isalpha(int c)
+void div_nodes(stack_t **stack, unsigned int line_number)
 {
-	if ((c >= 97 && c <= 122) || (c >= 65 && c <= 90))
-		return (1);
-	else
-		return (0);
+	int sum;
+
+	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
+		more_err(8, line_number, "div");
+
+	if ((*stack)->n == 0)
+		more_err(9, line_number);
+	(*stack) = (*stack)->next;
+	sum = (*stack)->n / (*stack)->prev->n;
+	(*stack)->n = sum;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
 }
